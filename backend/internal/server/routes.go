@@ -1,0 +1,32 @@
+package server
+
+import (
+	"backend/internal/handler"
+
+	"github.com/go-chi/chi/v5"
+)
+
+func routerHandler(r *chi.Mux, apiCfg *handler.ApiConfig) {
+	r.Route("/v1", func(r chi.Router) {
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/signup", apiCfg.SignupHandler)
+			r.Post("/login", apiCfg.LoginHandler)
+			r.Post("/logout", apiCfg.MiddlewareAuth(apiCfg.LogoutHandler))
+		})
+
+		r.Route("/snippets", func(r chi.Router) {
+			r.Post("/create", apiCfg.MiddlewareAuth(apiCfg.CreateSnippetHandler))
+			r.Get("/", apiCfg.MiddlewareAuth(apiCfg.GetAllSnippetsHandler))
+			r.Get("/{id}", apiCfg.MiddlewareAuth(apiCfg.GetSnippetHandler))
+			r.Put("/{id}", apiCfg.MiddlewareAuth(apiCfg.UpdateSnippetHandler))
+			r.Delete("/{id}", apiCfg.MiddlewareAuth(apiCfg.DeleteSnippetHandler))
+			r.Get("/share/{share_id}", apiCfg.GetPublicSnippetHandler)
+		})
+
+		r.Route("/user", func(r chi.Router) {
+			r.Get("/profile", apiCfg.MiddlewareAuth(apiCfg.GetUserDetailsHandler))
+			r.Put("/update", apiCfg.MiddlewareAuth(apiCfg.UpdateUserHandler))
+		})
+
+	})
+}

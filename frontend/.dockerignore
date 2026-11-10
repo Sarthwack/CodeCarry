@@ -1,0 +1,11 @@
+node_modules
+.next
+dist
+*.ts
+*.tsx
+*.test.*
+*.spec.*
+.vscode
+.env
+Dockerfile
+.dockerignore
